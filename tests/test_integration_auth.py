@@ -26,7 +26,8 @@ def test_signup(client, monkeypatch):
     assert "avatar" in data
 
 
-def test_repeat_signup(client, monkeypatch):
+@pytest.mark.asyncio
+async def test_repeat_signup(client, monkeypatch):
     mock_send_email = Mock()
     monkeypatch.setattr("src.api.auth.send_email", mock_send_email)
     response = client.post("api/auth/register", json=user_data)

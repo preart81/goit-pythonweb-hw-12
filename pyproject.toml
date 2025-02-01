@@ -21,8 +21,15 @@ fastapi-mail = "^1.4.2"
 slowapi = "^0.1.9"
 cloudinary = "^1.42.1"
 pytest = "^8.3.4"
+pytest-asyncio = "^0.25.3"
+aiosqlite = "^0.20.0"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = "."
+filterwarnings = "ignore::DeprecationWarning"
+asyncio_default_fixture_loop_scope = "function"

@@ -21,6 +21,12 @@ poetry install
   ```Shell
    sphinx-quickstart docs
   ```
+- Опишимо структуру документації у файлі [docs/index.rst](docs/index.rst).
+- Виконаємо команду
+  ```Shell
+   .\\make.bat html
+  ```
+- Документація сформована у файлі [docs/_build/html/index.html](docs/_build/html/index.html)
 
 ## Запуск
 

@@ -1,3 +1,19 @@
+"""
+This module defines the API endpoints for managing contacts using FastAPI.
+Endpoints:
+- `GET /contacts/`: Fetch a list of contacts for the current user with pagination.
+- `GET /contacts/{contact_id}`: Retrieve a contact by its ID.
+- `POST /contacts/`: Create a new contact.
+- `PUT /contacts/{contact_id}`: Update an existing contact.
+- `DELETE /contacts/{contact_id}`: Remove a contact by its ID.
+- `GET /contacts/search/`: Search for contacts based on a text query.
+- `POST /contacts/upcoming-birthdays`: Fetch contacts with upcoming birthdays within a specified number of days.
+Dependencies:
+- `db`: The database session dependency.
+- `user`: The current authenticated user dependency.
+- `HTTPException`: If the contact is not found, raises a 404 HTTP exception with a relevant message.
+"""
+
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -20,6 +36,16 @@ async def read_contacts(
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    """
+    Fetch a list of contacts for the current user with pagination.
+    Args:
+        skip (int, optional): The number of records to skip. Defaults to 0.
+        limit (int, optional): The maximum number of records to return. Defaults to 100.
+        db (AsyncSession, optional): The database session dependency.
+        user (User, optional): The current authenticated user dependency.
+    Returns:
+        List[Contact]: A list of contacts for the current user.
+    """
 
     contact_service = ContactService(db)
     contacts = await contact_service.get_contacts(skip, limit, user)

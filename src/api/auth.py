@@ -1,13 +1,24 @@
+"""
+Registers a new user by saving their details to the database.
+
+Args:
+    user_data (UserCreate): The user details for registration.
+
+Returns:
+    User: The registered user object.
+
+Raises:
+    HTTPException: If a user with the given email already exists.
+"""
+
 from fastapi import (
     APIRouter,
     BackgroundTasks,
     Depends,
     HTTPException,
     Request,
-    Security,
     status,
 )
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
@@ -28,6 +39,19 @@ async def register_user(
     request: Request,
     db: Session = Depends(get_db),
 ):
+    """
+    Registers a new user in the system.
+    Args:
+        user_data (UserCreate): The data required to create a new user.
+        background_tasks (BackgroundTasks): Background tasks to be executed after the user is registered.
+        request (Request): The HTTP request object.
+        db (Session, optional): The database session dependency.
+    Raises:
+        HTTPException: If a user with the given email already exists.
+        HTTPException: If a user with the given username already exists.
+    Returns:
+        User: The newly created user.
+    """
     user_service = UserService(db)
 
     email_user = await user_service.get_user_by_email(user_data.email)
@@ -54,6 +78,17 @@ async def register_user(
 # Логін користувача
 @router.post("/login", response_model=Token)
 async def login_user(body: UserLogin, db: Session = Depends(get_db)):
+    """
+    Logs in a user by verifying their email and password, and returns an access token.
+    Args:
+        body (UserLogin): The login details provided by the user, including email and password.
+        db (Session, optional): The database session dependency. Defaults to Depends(get_db).
+    Raises:
+        HTTPException: If the user is not confirmed.
+        HTTPException: If the user does not exist or the password is incorrect.
+    Returns:
+        dict: A dictionary containing the access token and token type.
+    """
     user_service = UserService(db)
     user = await user_service.get_user_by_email(body.email)
     if user and not user.confirmed:
@@ -79,6 +114,16 @@ async def request_email(
     request: Request,
     db: Session = Depends(get_db),
 ):
+    """
+    Handles the request to send a confirmation email to the user.
+    Args:
+        body (RequestEmail): The request body containing the user's email.
+        background_tasks (BackgroundTasks): The background tasks manager to handle asynchronous tasks.
+        request (Request): The HTTP request object.
+        db (Session, optional): The database session dependency.
+    Returns:
+        dict: A message indicating the status of the email confirmation request.
+    """
     user_service = UserService(db)
     user = await user_service.get_user_by_email(body.email)
 
@@ -93,6 +138,19 @@ async def request_email(
 
 @router.get("/confirmed_email/{token}")
 async def confirmed_email(token: str, db: Session = Depends(get_db)):
+    """
+    Confirm the user's email address using the provided token.
+
+    Args:
+        token (str): The token used to confirm the email address.
+        db (Session, optional): The database session dependency.
+
+    Returns:
+        dict: A message indicating the result of the email confirmation.
+
+    Raises:
+        HTTPException: If the user is not found or the verification fails.
+    """
     email = await get_email_from_token(token)
     user_service = UserService(db)
     user = await user_service.get_user_by_email(email)

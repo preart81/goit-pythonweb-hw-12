@@ -1,3 +1,12 @@
+""" 
+This module defines Pydantic models for contact information and related requests.
+
+Classes:
+    ContactBase: A base schema for contact information, including fields for first name, last name, email, phone number, birthday, and additional data.
+    ContactResponse: Extends ContactBase to include additional fields for id, created_at, and updated_at.
+    ContactBirthdayRequest: Represents a request for contact birthdays, including a field for the number of days within which to search for birthdays. 
+"""
+
 from datetime import date, datetime
 from typing import List, Optional
 
@@ -18,6 +27,19 @@ class ContactBase(BaseModel):
 
     @field_validator("birthday")
     def validate_birthday(cls, v):
+        """
+        Validate the birthday field to ensure that it is not in the future.
+
+        Args:
+            v (date): The birthday date to validate.
+
+        Returns:
+            date: The validated birthday date.
+
+        Raises:
+            ValueError: If the birthday is in the future.
+        """
+
         if v > date.today():
             raise ValueError("Birthday cannot be in the future")
         return v

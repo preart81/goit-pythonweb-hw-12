@@ -1,7 +1,7 @@
-""" Main file to run the FastAPI application. """
+""" Main file to run the contact management application. """
 
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi.errors import RateLimitExceeded
 from starlette.responses import JSONResponse
@@ -27,8 +27,18 @@ app.add_middleware(
 
 @app.exception_handler(RateLimitExceeded)
 async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    """
+    Handles rate limit exceeded exceptions.
+
+    Args:
+        request (Request): The incoming HTTP request.
+        exc (RateLimitExceeded): The exception raised when the rate limit is exceeded.
+
+    Returns:
+        JSONResponse: A JSON response with a 429 status code and an error message indicating that the rate limit has been exceeded.
+    """
     return JSONResponse(
-        status_code=429,
+        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         content={
             "error": f"Перевищено ліміт запитів ({exc.detail}). Спробуйте пізніше."
         },
@@ -37,6 +47,12 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 
 @app.get("/")
 async def root():
+    """
+    Root endpoint that returns a welcome message.
+
+    Returns:
+        dict: A dictionary containing the welcome message.
+    """
     return {"message": messages.WELCOME_MESSAGE}
 
 

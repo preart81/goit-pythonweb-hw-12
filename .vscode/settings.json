@@ -1,3 +1,10 @@
 {
-  "cSpell.words": ["autouse", "docstrings", "ilike", "poolclass", "slowapi"]
+  "cSpell.words": [
+    "autouse",
+    "docstrings",
+    "ilike",
+    "poolclass",
+    "pytest",
+    "slowapi"
+  ]
 }

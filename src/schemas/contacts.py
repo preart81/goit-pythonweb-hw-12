@@ -16,6 +16,16 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 class ContactBase(BaseModel):
     """
     ContactBase schema for contact information.
+
+    Attributes:
+        first_name (str): The first name of the contact. Must be between 2 and 50 characters.
+        last_name (str): The last name of the contact. Must be between 2 and 50 characters.
+        email (EmailStr): The email address of the contact.
+        phone_number (str): The phone number of the contact. Must be between 6 and 20 characters.
+        birthday (date): The birthday of the contact. Must not be in the future.
+        additional_data (Optional[str]): Any additional information about the contact. Maximum length is 150 characters.
+    Methods:
+        validate_birthday(cls, v):
     """
 
     first_name: str = Field(max_length=50, min_length=2)

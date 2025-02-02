@@ -26,7 +26,17 @@ poetry install
   ```Shell
    .\\make.bat html
   ```
-- Документація сформована у файлі [docs/_build/html/index.html](docs/_build/html/index.html)
+- Документація сформована у файлі [docs/\_build/html/index.html](docs/_build/html/index.html)
+
+## 2. Тестування.
+
+Для тестування використаємо фреймворк `pytest`
+
+- Створимо [tests/conftest.py](tests/conftest.py) для налаштування та конфігурації тестів.
+- Створимо безпосередньо файли тестів
+  - [tests/test_integration_auth.py](tests/test_integration_auth.py)
+  - [tests/test_integration_contacts.py](tests/test_integration_contacts.py)
+  - [tests/test_unit_repository_contacts.py](tests/test_unit_repository_contacts.py)
 
 ## Запуск
 

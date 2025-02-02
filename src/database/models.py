@@ -62,6 +62,7 @@ class User(Base):
         created_at (datetime): Timestamp when the user was created.
         avatar (str, optional): URL or path to the user's avatar image.
         confirmed (bool): Indicates whether the user's email is confirmed.
+
     """
 
     __tablename__ = "users"

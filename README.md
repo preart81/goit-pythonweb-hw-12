@@ -45,13 +45,15 @@ poetry install
 
   ![tests result](md.media/001.png)
 
-- Для перевірки рівня покриття тестами використаємо `pytest-cov`  
-```shell
-poetry add pytest-cov
-pytest --cov=src tests/ --cov-report=html
-```
-Остання команда генерує інтерактивний html-звіт покриття тестами.
-- 
+- Для перевірки рівня покриття тестами використаємо `pytest-cov`
+  ```shell
+  poetry add pytest-cov
+  pytest --cov=src tests/ --cov-report=html
+  ```
+  Остання команда генерує інтерактивний html-звіт покриття тестами.
+- Файли для аналізу покриття можна налаштувати в [pyproject.toml](pyproject.toml) [Specifying source files
+](https://coverage.readthedocs.io/en/latest/source.html#source)  
+    ![alt text](md.media/002.png)
 
 ## Запуск
 

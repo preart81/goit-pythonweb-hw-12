@@ -1,6 +1,8 @@
+from pprint import pprint
 from unittest.mock import Mock
 
 import pytest
+from fastapi import status
 from sqlalchemy import select
 
 from src.conf import messages
@@ -79,7 +81,7 @@ def test_wrong_password_login(client):
         "api/auth/login",
         json={"email": user_data.get("email"), "password": "wrong-password"},
     )
-    assert response.status_code == 401, response.text
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED, response.text
     data = response.json()
     assert data["detail"] == messages.API_ERROR_WRONG_PASSWORD
 
@@ -101,3 +103,14 @@ def test_validation_error_login(client):
     assert response.status_code == 422, response.text
     data = response.json()
     assert "detail" in data
+
+def test_request_email(client):
+    response = client.post(
+        "api/auth/request_email",
+        json={"email": user_data.get("email")},
+    )
+    assert response.status_code == 200, response.text
+    data = response.json()
+    # pprint(data)
+    assert data["message"] == messages.API_EMAIL_CONFIRMED
+    

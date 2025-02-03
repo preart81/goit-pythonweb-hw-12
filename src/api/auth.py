@@ -128,7 +128,7 @@ async def request_email(
     user = await user_service.get_user_by_email(body.email)
 
     if user.confirmed:
-        return {"message": "Ваша електронна пошта вже підтверджена"}
+        return {"message": messages.API_EMAIL_CONFIRMED}
     if user:
         background_tasks.add_task(
             send_email, user.email, user.username, request.base_url
@@ -159,6 +159,6 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
             status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error"
         )
     if user.confirmed:
-        return {"message": "Ваша електронна пошта вже підтверджена"}
+        return {"message": messages.API_EMAIL_CONFIRMED}
     await user_service.confirmed_email(email)
     return {"message": "Електронну пошту підтверджено"}

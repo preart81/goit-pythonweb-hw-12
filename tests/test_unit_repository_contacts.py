@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from pprint import pprint
 from unittest.mock import AsyncMock, MagicMock
 
@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.models import Contact, User
 from src.repository.contacts import ContactRepository
 from src.schemas.contacts import ContactBase
+from tests.conftest import TestingSessionLocal
 
 test_contacts = [
     {
@@ -24,7 +25,7 @@ test_contacts = [
         "last_name": "LNAme-2",
         "email": "user-2@mail.com",
         "phone_number": "1111111111",
-        "birthday": str(date(2010, 2, 10)),
+        "birthday": str(date(2010, 12, 10)),
         "additional_data": "text-2",
     },
 ]
@@ -207,3 +208,41 @@ async def test_remove_contact(contact_repository, mock_session, user):
     assert result.additional_data == existing_contact.additional_data
     mock_session.delete.assert_awaited_once_with(existing_contact)
     mock_session.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_search_contacts_valid_query(
+    contact_repository, mock_session, user, client
+):
+    user = User(id=0)
+    contacts_to_db = [
+        Contact(
+            id=i + 1,
+            first_name=contact["first_name"],
+            last_name=contact["last_name"],
+            email=contact["email"],
+            phone_number=contact["phone_number"],
+            birthday=date.fromisoformat(contact["birthday"]),
+            additional_data=contact["additional_data"],
+            user=user,
+        )
+        for i, contact in enumerate(test_contacts[:2])
+    ]
+    contact_to_search = contacts_to_db[0]
+
+    async with TestingSessionLocal() as session:
+        session.add_all(contacts_to_db)
+        await session.commit()
+
+        # Use the session in the repository
+        contact_repository.db = session
+
+        search_query = contact_to_search.first_name
+        # search_query = "not-found-text"
+        contacts = await contact_repository.search_contacts(
+            search=search_query, skip=0, limit=100, user=user
+        )
+        # pprint([contact.__dict__ for contact in contacts])
+
+    assert len(contacts) >= 1
+    assert contact_to_search.id in [contact.id for contact in contacts]

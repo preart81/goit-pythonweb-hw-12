@@ -37,6 +37,21 @@ poetry install
   - [tests/test_integration_auth.py](tests/test_integration_auth.py)
   - [tests/test_integration_contacts.py](tests/test_integration_contacts.py)
   - [tests/test_unit_repository_contacts.py](tests/test_unit_repository_contacts.py)
+- Запустимо тести з кореня проекту
+
+  ```shell
+  pytest -vs tests
+  ```
+
+  ![tests result](md.media/001.png)
+
+- Для перевірки рівня покриття тестами використаємо `pytest-cov`  
+```shell
+poetry add pytest-cov
+pytest --cov=src tests/ --cov-report=html
+```
+Остання команда генерує інтерактивний html-звіт покриття тестами.
+- 
 
 ## Запуск
 

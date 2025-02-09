@@ -52,8 +52,13 @@ poetry install
   ```
   Остання команда генерує інтерактивний html-звіт покриття тестами.
 - Файли для аналізу покриття можна налаштувати в [pyproject.toml](pyproject.toml) [Specifying source files
-](https://coverage.readthedocs.io/en/latest/source.html#source)  
-    ![alt text](md.media/002.png)
+  ](https://coverage.readthedocs.io/en/latest/source.html#source)  
+   ![alt text](md.media/002.png)
+
+## 6. Збереження конфіденційних даних.
+
+Конфіденційні дані та налаштування зберігаємо у файлі `.env`, який не включаємо до репозиторію.
+Приклад файла збережемо у [.env.example](.env.example)
 
 ## Запуск
 

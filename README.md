@@ -8,7 +8,7 @@
 poetry install
 ```
 
-## 1. Документація коду.
+## 1. Документація коду
 
 За допомогою Sphinx створимо документацію для нашого застосунку.
 
@@ -28,7 +28,7 @@ poetry install
   ```
 - Документація сформована у файлі [docs/\_build/html/index.html](docs/_build/html/index.html)
 
-## 2. Тестування.
+## 2. Тестування
 
 Для тестування використаємо фреймворк `pytest`
 
@@ -55,7 +55,46 @@ poetry install
   ](https://coverage.readthedocs.io/en/latest/source.html#source)  
    ![alt text](md.media/002.png)
 
-## 6. Збереження конфіденційних даних.
+## 3. Кешування з Redis
+
+- Щоб працювати з Redis із Python, потрібно встановити один із пакетів для роботи, наприклад redis:
+  ```shell
+  poetry add redis
+  ```
+- розгорнемо докер-контейнер наступною командою в терміналі.
+
+```shell
+docker run --name redis-cache -d -p 6379:6379 redis
+```
+
+- Для контролю терміну дії кешу використаємо модуль
+  ```shell
+  poetry add redis-lru
+  ```
+- Для кешування функції `get_current_user` з модуля [src/services/auth.py](src/services/auth.py):
+
+  - імпортуємо модулі
+
+  ```Py
+  import redis
+  from redis_lru import RedisLRU
+  ```
+
+  - створимо декоратор для кешування протягом 15хв
+
+  ```Py
+  client = redis.StrictRedis(host="localhost", port=6379, password=None)
+  cache = RedisLRU(client, default_ttl=15 * 60)
+  ```
+
+  - Огорнемо нашу функцію декоратором
+
+  ```Py
+  @cache
+  async def get_current_user(...
+  ```
+
+## 6. Збереження конфіденційних даних
 
 Конфіденційні дані та налаштування зберігаємо у файлі `.env`, який не включаємо до репозиторію.
 Приклад файла збережемо у [.env.example](.env.example)

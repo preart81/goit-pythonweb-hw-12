@@ -34,23 +34,33 @@ conf = ConnectionConfig(
 )
 
 
-async def send_email(email: EmailStr, username: str, host: str):
+async def send_email(email: EmailStr, username: str, host: str, type: str = "verify"):
     """
-    Sends an email to the user with a link to verify their email address.
+    Sends an email to the user based on the specified type.
 
     Args:
         email (EmailStr): The email address of the user.
         username (str): The username of the user.
         host (str): The host of the server (used for the verification link).
 
+
     Returns:
         None
     """
-
+    settings = {
+        "verify": {
+            "subject": "Confirm your email",
+            "template": "verify_email.html",
+        },
+        "reset": {
+            "subject": "Reset your password",
+            "template": "reset_password.html",
+        },
+    }
     try:
         token_verification = create_email_token({"sub": email})
         message = MessageSchema(
-            subject="Confirm your email",
+            subject=settings[type]["subject"],
             recipients=[email],
             template_body={
                 "host": host,
@@ -61,6 +71,6 @@ async def send_email(email: EmailStr, username: str, host: str):
         )
 
         fm = FastMail(conf)
-        await fm.send_message(message, template_name="verify_email.html")
+        await fm.send_message(message, template_name=settings[type]["template"])
     except ConnectionErrors as err:
         print(err)

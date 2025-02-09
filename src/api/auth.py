@@ -162,3 +162,59 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
         return {"message": messages.API_EMAIL_CONFIRMED}
     await user_service.confirmed_email(email)
     return {"message": "Електронну пошту підтверджено"}
+
+
+# скидання пароля
+@router.post("/reset_password")
+async def reset_password(
+    body: RequestEmail,
+    background_tasks: BackgroundTasks,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    """
+    Handles the request to reset the user's password.
+    Args:
+        body (RequestEmail): The request body containing the user's email.
+        background_tasks (BackgroundTasks): The background tasks manager for asynchronous tasks.
+        request (Request): The HTTP request object.
+        db (Session, optional): The database session dependency.
+    Returns:
+        dict: A message indicating the status of the password reset request.
+    """
+    user_service = UserService(db)
+    user = await user_service.get_user_by_email(body.email)
+    if user:
+        background_tasks.add_task(
+            send_email, user.email, user.username, request.base_url, type="reset"
+        )
+    return {"message": "Перевірте свою електронну пошту для скидання пароля"}
+
+# зміна пароля
+@router.patch("/update_password/{token}")
+async def update_password(
+    token: str,
+    new_password: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Changes the user's password using the provided token.
+    Args:
+        token (str): The token used to change the password.
+        password (str): The new password.
+        db (Session, optional): The database session dependency.
+    Returns:
+        dict: A message indicating the result of the password change.
+    Raises:
+        HTTPException: If the user is not found or the password change fails.
+    """
+    email = await get_email_from_token(token)
+    user_service = UserService(db)
+    user = await user_service.get_user_by_email(email)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error"
+        )
+    new_password = Hash().get_password_hash(new_password)
+    await user_service.update_password(email, new_password)
+    return {"message": "Пароль успішно змінено"}

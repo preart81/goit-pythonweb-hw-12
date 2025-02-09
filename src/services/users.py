@@ -109,3 +109,17 @@ class UserService:
             bool: True if the avatar URL was successfully updated, False otherwise.
         """
         return await self.repository.update_avatar_url(email, url)
+
+    #  зміна пароля
+    async def update_password(self, email: str, password: str):
+        """
+        Asynchronously updates the password for a user identified by their email.
+
+        Args:
+            email (str): The email address of the user whose password is to be updated.
+            password (str): The new password to be set for the user.
+
+        Returns:
+            bool: True if the password was successfully updated, False otherwise.
+        """
+        return await self.repository.update_password(email, password)

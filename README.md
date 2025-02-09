@@ -80,18 +80,31 @@ docker run --name redis-cache -d -p 6379:6379 redis
   from redis_lru import RedisLRU
   ```
 
-  - створимо декоратор для кешування протягом 15хв
+  - налаштуємо кешування з ttl=15хв
 
   ```Py
   client = redis.StrictRedis(host="localhost", port=6379, password=None)
   cache = RedisLRU(client, default_ttl=15 * 60)
   ```
 
-  - Огорнемо нашу функцію декоратором
+  - перед запитом в БД перевіряємо чи користувач в кеші і повертаємось з функції без запиту
 
   ```Py
-  @cache
-  async def get_current_user(...
+    # кешування
+    cache_key = f"user:{username}"
+    cached_user = cache.get(cache_key)
+    if cached_user:
+        # print("cached_user")
+        return cached_user
+  ```
+
+  - якщо запит був виконанний - оновлюємо кеш
+
+  ```py
+    # оновлення кешу
+    cache.set(cache_key, user)
+
+    return user
   ```
 
 ## 5. Керування ролями
@@ -164,8 +177,9 @@ alembic revision --autogenerate -m 'add user roles'
       userrole().drop(op.get_bind())
   ```
 
-```shell
+- застосовуємо міграцію
 
+```shell
 alembic upgrade head
 ```
 

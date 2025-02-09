@@ -93,7 +93,6 @@ async def create_access_token(data: dict, expires_delta: Optional[int] = None):
     return encoded_jwt
 
 
-@cache
 async def get_current_user(
     token: HTTPAuthorizationCredentials = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
@@ -128,10 +127,23 @@ async def get_current_user(
             raise credentials_exception
     except JWTError as e:
         raise credentials_exception
+
+    # кешування
+    cache_key = f"user:{username}"
+    cached_user = cache.get(cache_key)
+    if cached_user:
+        # print("cached_user")
+        return cached_user
+
     user_service = UserService(db)
     user = await user_service.get_user_by_username(username)
+
     if user is None:
         raise credentials_exception
+    
+    # оновлення кешу
+    cache.set(cache_key, user)
+
     return user
 
 

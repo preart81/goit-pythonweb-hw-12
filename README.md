@@ -183,10 +183,40 @@ alembic revision --autogenerate -m 'add user roles'
 alembic upgrade head
 ```
 
+- додамо функцію перевірки чи має користувач права адміністратора
+  [src/services/auth.py](src/services/auth.py)
+
+  ```py
+  def get_current_admin_user(current_user: User = Depends(get_current_user)):
+      """
+      Checks if the current user is an admin.
+
+      """
+      if current_user.role != UserRole.ADMIN:
+          raise HTTPException(
+              status_code=status.HTTP_403_FORBIDDEN,
+              detail="The user does not have enough privileges",
+          )
+  ```
+
+- змінимо маршрут `/avatar` в [src/api/users.py](src/api/users.py), щоб він працював тільки для адміністраторів
+
+```py
+@router.patch("/avatar", response_model=User)
+async def update_avatar_user(
+    file: UploadFile = File(),
+    # user: User = Depends(get_current_user),
+    user: User = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+```
+
 ## 6. Збереження конфіденційних даних
 
 Конфіденційні дані та налаштування зберігаємо у файлі `.env`, який не включаємо до репозиторію.
 Приклад файла збережемо у [.env.example](.env.example)
+
+## 7. Контейнеризація
 
 ## Запуск
 

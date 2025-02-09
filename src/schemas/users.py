@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from typing import List, Optional
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, field_validator
-
+from src.database.models import UserRole
 
 # Схема користувача
 class User(BaseModel):
@@ -20,6 +20,7 @@ class User(BaseModel):
     username: str
     email: str
     avatar: str
+    role: UserRole
 
     model_config = ConfigDict(from_attributes=True)
 

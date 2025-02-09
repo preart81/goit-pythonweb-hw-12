@@ -6,8 +6,12 @@ Classes:
 """
 
 from datetime import date, datetime
+from enum import Enum
 
-from sqlalchemy import Boolean, Column, Integer, String, Table, func
+from sqlalchemy import Boolean, Column
+from sqlalchemy import Enum as SqlEnum
+from sqlalchemy import Integer, String, Table, func
+from sqlalchemy.dialects.postgresql import ENUM as PgEnum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql.schema import ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.sql.sqltypes import Date, DateTime
@@ -50,6 +54,15 @@ class Contact(Base):
     user = relationship("User", backref="contacts")
 
 
+class UserRole(Enum):
+    """
+    Enum representing the roles of a user.
+    """
+
+    ADMIN = "admin"
+    USER = "user"
+
+
 class User(Base):
     """
     User model representing a user in the database.
@@ -73,3 +86,9 @@ class User(Base):
     created_at = Column(DateTime, default=func.now())
     avatar = Column(String(255), nullable=True)
     confirmed = Column(Boolean, default=False)
+    role = Column(
+        SqlEnum(UserRole, create_type=True),
+        name="role",
+        default=UserRole.USER,
+        nullable=False,
+    )

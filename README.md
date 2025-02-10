@@ -259,11 +259,16 @@ async def update_avatar_user(
 - обираємо репозиторій
 - налаштовуємо оточення з нашого файлу `.env`  
   ![alt text](md.media/koyeb_01.png)
-- налаштовуємо health chek
+- налаштовуємо health check
   ![alt text](md.media/koyeb_03.png)
 - створюємо БД
   ![alt text](md.media/koyeb_02.png)
 - змінну оточення `DB_URL` налаштовуємо для роботи із створеною БД
+- застосовуємо міграції
+  `alembic upgrade head`
+- після застосування міграцій сервіс запускається і проходить health check
+![alt text](md.media/koyeb_04.png)
+
 
 ## Запуск
 

@@ -13,12 +13,12 @@ Functions:
 from datetime import UTC, datetime, timedelta
 from typing import Optional
 
-import redis
+# import redis
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from redis_lru import RedisLRU
+# from redis_lru import RedisLRU
 from sqlalchemy.orm import Session
 
 from src.conf.config import settings
@@ -26,8 +26,8 @@ from src.database.db import get_db
 from src.database.models import User, UserRole
 from src.services.users import UserService
 
-client = redis.StrictRedis(host="localhost", port=6379, password=None)
-cache = RedisLRU(client, default_ttl=15 * 60)
+# client = redis.StrictRedis(host="localhost", port=6379, password=None)
+# cache = RedisLRU(client, default_ttl=15 * 60)
 
 
 class Hash:
@@ -129,12 +129,12 @@ async def get_current_user(
     except JWTError as e:
         raise credentials_exception
 
-    # кешування
-    cache_key = f"user:{username}"
-    cached_user = cache.get(cache_key)
-    if cached_user:
-        # print("cached_user")
-        return cached_user
+    # # кешування
+    # cache_key = f"user:{username}"
+    # cached_user = cache.get(cache_key)
+    # if cached_user:
+    #     # print("cached_user")
+    #     return cached_user
 
     user_service = UserService(db)
     user = await user_service.get_user_by_username(username)
@@ -142,8 +142,8 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
 
-    # оновлення кешу
-    cache.set(cache_key, user)
+    # # оновлення кешу
+    # cache.set(cache_key, user)
 
     return user
 
